@@ -74,6 +74,11 @@ def create_lead_matrix(data):
     return lead_matrix
 
 
+def area_val(x, y):
+    """ Return the area integral between two arrays x and y. """
+    return x.dot(cyc_diff(y)) - y.dot(cyc_diff(x)) 
+
+
 def sort_lead_matrix(LM, p=1):
     """" Sort the lead matrix using the phases of the p-th eigenvector.
 
