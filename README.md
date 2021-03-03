@@ -1,2 +1,3 @@
-# colab_helper_files
+# Google Colaboratory Helper Files
+
 A repository to store some files to make Colab Notebooks
