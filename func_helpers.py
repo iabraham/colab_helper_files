@@ -50,3 +50,13 @@ def find_nearest(array, value):
     idx = (np.abs(array - value)).argmin()
     return array[idx]
 
+
+def flatten(regular_list):
+    """ Flattens a list using list comprehensions. 
+    
+    Parameters
+    ----------
+    regular_list:
+        A singly nested list to flatten.
+    """
+    return [item for sublist in regular_list for item in sublist]
