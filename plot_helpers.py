@@ -5,6 +5,7 @@ import matplotlib
 tfunctions = {'rms': lambda x:np.sqrt(np.mean(np.square(np.abs(x)))),
                       'mean': lambda x:np.mean(np.abs(x))}
 
+
 def plot_evec(fig, ax, vec, tfunc):
     """ Helper function to plot elements of eigenvector around complex plane.
     
@@ -36,6 +37,7 @@ def plot_evec(fig, ax, vec, tfunc):
 
     return ax
 
+  
 def highlight_cell(x,y, ax=None, **kwargs):
     """ Highlight the cell indexed by x,y in grid held in ax.
 
