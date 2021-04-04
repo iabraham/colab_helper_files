@@ -87,6 +87,7 @@ def download_file_from_google_drive(id, destination):
 
     save_response_content(response, destination)    
 
+    
 def get_confirm_token(response):
     """ Function to filter out some Cookie business from Google and
         extract the actual data
@@ -102,6 +103,7 @@ def get_confirm_token(response):
             return value
 
     return None
+
 
 def save_response_content(response, destination):
     """ Function to open write the proper response content from a 
