@@ -6,7 +6,7 @@ tfunctions = {'rms': lambda x:np.sqrt(np.mean(np.square(np.abs(x)))),
                       'mean': lambda x:np.mean(np.abs(x))}
 
 
-def plot_evec(fig, ax, vec, tfunc):
+def plot_evec(fig, ax, vec, tfunc='rms', out=False):
     """ Helper function to plot elements of eigenvector around complex plane.
     
     Parameters
@@ -19,25 +19,40 @@ def plot_evec(fig, ax, vec, tfunc):
         The eigenvector to plot
     tfunc
         The function to put a threshold around the origin
+    out
+        Boolean specifying whether to highlight points outside the limit
+        obtained via usage of tfunc
     """
 
+    if fig is None:
+        fig = plt.gcf()
+    if ax is None:
+        ax = plt.gca()
+    
     lim = max(np.abs(np.amax(vec)), np.abs(np.amin(vec)))
     circ = plt.Circle((0, 0), lim, color='k', fill=False)
     x = np.real(vec).flatten()
     y = np.imag(vec).flatten()
-    ax.plot(x, y, 'ko:')
-    ax.plot(x[0], y[0], 'ro')
+    
+    ax.plot(x, y, 'ko:', zorder=1)
+    ax.plot(x[0], y[0], 'ro', zorder=2)
     ax.add_artist(circ)
     ax.grid()
+    
     plt.xlim(right=1.1 * lim, left=-1.1 * lim)
     plt.ylim(top=1.1 * lim, bottom=-1.1 * lim)
     lim = tfunctions[tfunc](vec)
     circ = plt.Circle((0, 0), lim, color='b', fill=False, linestyle='dotted')
     ax.add_artist(circ)
+    
+    if out:
+        idx = np.where(np.abs(vec)>lim)
+        ax.scatter(x[idx], y[idx], c='blue', zorder=3)
+        return ax, idx
 
     return ax
 
-  
+
 def highlight_cell(x,y, ax=None, **kwargs):
     """ Highlight the cell indexed by x,y in grid held in ax.
 
@@ -50,6 +65,7 @@ def highlight_cell(x,y, ax=None, **kwargs):
     ax
         A matplotlib axes object containing the plotted grid
     """
+
     rect = plt.Rectangle((x-.5, y-.5), 1,1, fill=False, **kwargs)
     ax = ax or plt.gca()
     ax.add_patch(rect)
