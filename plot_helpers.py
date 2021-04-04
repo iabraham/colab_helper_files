@@ -190,4 +190,28 @@ def annotate_heatmap(im, data=None, valfmt="{x:.2f}",
             texts.append(text)
 
     return texts
+  
+  
+  def multipage(filename, figs=None, dpi=200):
+    """ Writes open figures to a PDF file 
+
+    Parameters
+    ----------
+    filename:
+        A string or file object
+    figs:
+        A list of open figures, default is None
+    dpi:
+        The dots per inch (quality) of the output PDF
+    """
+    
+    import matplotlib.pyplot as plt
+
+    pp = PdfPages(filename)
+    if figs is None:
+        figs = [plt.figure(n) for n in plt.get_fignums()]
+    for fig in figs:
+        fig.savefig(pp, format='pdf')
+    pp.close()
+
 
