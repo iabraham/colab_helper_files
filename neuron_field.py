@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
 
 class Field:
@@ -79,3 +81,29 @@ class Neuron:
 
         temp = list(self.fields.keys())
         return "A Neuron object with fields: " + ", ".join(temp)
+
+    
+def plot_neurons(neuron_dict):
+    """A function to plot the neuronal data one in multiple 3 x 3 grids.
+
+    Parameters
+    ----------
+    data_dict:
+        A dictionary whose keys are the neuron names and values are instances
+        of Neuron objects. 
+
+    """
+
+    for name, neuron in neuron_dict.items():
+        fig = plt.figure(figsize=(16,16))
+        grid = gridspec.GridSpec(ncols=3, nrows=3, figure=fig)
+        idxs = [(i,j) for i in range(3) for j in range(3)]
+        
+        for idx, (field, data) in zip(idxs, neuron.fields.items()):
+            ax = fig.add_subplot(grid[idx])
+            ax.plot(*data.get_timeseries(), '--o', linewidth=1, markersize=4)
+            ax.set_xlabel("Time stamps")
+            ax.set_ylabel("Firing rate")
+            ax.set_title(field)
+            
+        fig.suptitle(name)
