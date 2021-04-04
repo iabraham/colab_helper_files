@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib
+from matplotlib.backends.backend_pdf import PdfPages
 
 tfunctions = {'rms': lambda x:np.sqrt(np.mean(np.square(np.abs(x)))),
                       'mean': lambda x:np.mean(np.abs(x))}
@@ -206,6 +206,7 @@ def multipage(filename, figs=None, dpi=200):
   """
   
   import matplotlib.pyplot as plt
+
   pp = PdfPages(filename)
   if figs is None:
       figs = [plt.figure(n) for n in plt.get_fignums()]
