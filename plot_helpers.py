@@ -72,7 +72,7 @@ def highlight_cell(x,y, ax=None, **kwargs):
     return rect
 
 
-def heatmap(data, row_labels, col_labels, ax=None,
+def heatmap(data, row_labels, col_labels, ax=None, rot=-30,
             cbar_kw={}, cbarlabel="", **kwargs):
     """
     Create a heatmap from a numpy array and two lists of labels.
@@ -118,7 +118,7 @@ def heatmap(data, row_labels, col_labels, ax=None,
                    labeltop=True, labelbottom=False)
 
     # Rotate the tick labels and set their alignment.
-    plt.setp(ax.get_xticklabels(), rotation=-30, ha="right",
+    plt.setp(ax.get_xticklabels(), rotation=rot, ha="right",
              rotation_mode="anchor")
 
     # Turn spines off and create white grid.
