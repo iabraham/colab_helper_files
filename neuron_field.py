@@ -58,7 +58,7 @@ class Neuron:
             are Field instances. 
     """
 
-    def __init__(self, field_list, dataframe):
+    def __init__(self, field_list, dataframe, dtype):
         """ Constructor for the Neuron class 
 
         Parameters
@@ -72,9 +72,15 @@ class Neuron:
 
         for fieldname in field_list:
             data = dataframe[fieldname]
-            times = np.asarray(data.keys().tolist())
-            rates = data.values
-            self.fields[fieldname] = Field(times, rates, fieldname)
+            if dtype=="SPLINE":
+                times = np.asarray(data.keys().tolist())
+                rates = data.values
+                self.fields[fieldname] = Field(times, rates, fieldname)
+            else:
+                times = data['timestamps'].values
+                rates = data['firingrates'].values
+                self.fields[fieldname] = Field(times, rates, fieldname)
+
             
     def __repr__(self):
         """ Pretty print a Neuron instance"""
