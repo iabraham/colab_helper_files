@@ -6,7 +6,7 @@ from scipy.signal import detrend
 
 
 def match_ends(Z):
-    """ Adjust data to starting and ending points match in the timeseries. """
+    """ Adjust data so starting and ending points match in the timeseries. """
     n = Z.shape[1]  # No of columns
     return Z - outer(Z[:, n - 1] - Z[:, 0], linspace(0, 1, n))
 
@@ -24,25 +24,22 @@ def total_variation(Z, axis=0):
 
 def quad_norm(Z):
     """Normalize vector(s) Z so that the quadratic sum equals to 1."""
-    norms = norm(Z, axis=1)
-    normed_z = Z / norms[:, newaxis]
+    norms = norm(Z, axis=1)[:, newaxis]
+    normed_z = np.divide(Z, norms, out=np.zeros_like(Z), where=norms!=0)
     return normed_z
 
 
 def tv_norm(Z):
     """ Normalize vector(s) Z so that the quadratic variation is 1. """
-    norms = total_variation(Z, axis=1)
-    if norms.shape == ():
-        normed_z = Z / norms
-    else:
-        normed_z = Z / norms[:, newaxis]
+    norms = total_variation(Z, axis=1)[:, newaxis]
+    normed_z = np.divide(Z, norms, out=np.zeros_like(Z), where=norms!=0)
     return normed_z
 
 
 def std_norm(Z):
     """ Normalize vector(s) Z so that standard deviation is 1. """
     norms = std(Z, axis=1)
-    normed_z = Z / norms[:, newaxis]
+    normed_z = np.divide(Z, norms, out=np.zeros_like(Z), where=norms!=0)
     return normed_z
 
 def remove_linear(Z):
