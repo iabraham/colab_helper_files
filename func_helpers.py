@@ -1,5 +1,7 @@
 import numpy as np
-import requests
+from heapq import merge
+from functools import partial
+from itertools import combinations
 
 
 def gaussian(x, mu, b=0, k=1):
@@ -124,3 +126,64 @@ def save_response_content(response, destination):
         for chunk in response.iter_content(CHUNK_SIZE):
             if chunk: # filter out keep-alive new chunks
                 f.write(chunk)
+
+
+def intify(arr):
+    """Convert array into list of ints excepting nans in array. 
+
+    Parameters
+    ----------
+    arr:
+        array to intify
+    """
+    return list(map(lambda x: x if np.isnan(x) else int(x), arr))
+
+
+def zero_all_but(arr, n):
+    """Zero out everything in an array except the value "n". 
+
+    Parameters
+    ----------
+    arr:
+        array to modify
+    n:
+        value to leave unchanged.
+    """
+    return list(map(lambda z: z if z == n else 0, arr))
+
+
+def prune(x, y):
+    """Given two (possibly repeating) time stamped sequences 'prune' them.
+
+    Parameters
+    ----------
+    x
+        A tuple of (timestamps, data)
+    y
+        A tuple of (timestamps, data)
+    """
+
+    # Tag them so we know who-is-who after merge
+    *xbar, = zip(*x, np.ones(len(x[0])))
+    *ybar, = zip(*y, -np.ones(len(y[0])))
+    
+    # Merge/sort-merge them 
+    times, mixed_seq, labels = zip(*merge(xbar, ybar, key=lambda x:x[0]))
+    *seperated_labels, = map(partial(zero_all_but, labels), [1,-1])
+    
+    # Detect repeats and changes
+    changes = np.abs(np.diff(labels, append=labels[-1]))/2
+    *seperation_masks, = map(partial(np.multiply, changes), seperated_labels)
+    *mixed_seq_idxs, = map(np.nonzero, seperation_masks)
+
+    # Extract pruned version
+    xvals, yvals = map(lambda z: np.asarray(mixed_seq)[z], mixed_seq_idxs)
+    N = min(map(len, [xvals, yvals]))
+
+    return xvals[:N], yvals[:N]
+
+
+def make_pairs(data):
+    """Make pruned pairs from a list of data."""
+
+    return [prune(*pair) for pair in combinations(data, 2)]
