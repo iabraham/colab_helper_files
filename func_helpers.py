@@ -2,6 +2,7 @@ import numpy as np
 from heapq import merge
 from functools import partial
 from itertools import combinations
+import requests
 
 
 def gaussian(x, mu, b=0, k=1):
