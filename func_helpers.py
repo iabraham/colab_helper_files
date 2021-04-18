@@ -1,8 +1,9 @@
+import requests
 import numpy as np
 from heapq import merge
 from functools import partial
 from itertools import combinations
-import requests
+from cyclic_analysis import sort_lead_matrix
 
 
 def gaussian(x, mu, b=0, k=1):
@@ -188,3 +189,27 @@ def make_pairs(data):
     """Make pruned pairs from a list of data."""
 
     return [prune(*pair) for pair in combinations(data, 2)]
+
+
+def make_lead_matrix(data_list, intfunc):
+    """Manually create the lead matrix from a data list and integration
+    function
+
+    Parameters
+    ----------
+    data_list
+        A list of tuples (timestamps, firingrates)
+    intfunc
+        A function to create the area value from a pair of time series
+    """
+    N = len(data_list)
+    lead_matrix = np.zeros((N, N))
+    upper_triangle = [(i, j) for i in range(N) for j in range(i + 1, N)]
+
+    for *index, pair in zip(upper_triangle, make_pairs(data_list)):
+        index = index.pop()
+        area = intfunc(pair)
+        lead_matrix[index] = area
+        lead_matrix[tuple(reversed(index))] = - area
+
+    return sort_lead_matrix(lead_matrix, 1)
