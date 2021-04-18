@@ -38,7 +38,7 @@ def tv_norm(Z):
 
 def std_norm(Z):
     """ Normalize vector(s) Z so that standard deviation is 1. """
-    norms = std(Z, axis=1)
+    norms = std(Z, axis=1)[:, newaxis]
     normed_z = np.divide(Z, norms, out=np.zeros_like(Z), where=norms!=0)
     return normed_z
 
