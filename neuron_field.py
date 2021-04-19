@@ -67,6 +67,8 @@ class Neuron:
             A list of neuron names from the dataset
         dataframe:
             A pandas dataframe generated from the "*spline.csv" file
+        dtype:
+            String, either "SPLINE" or not spline (i.e. "CELL")
         """
         self.fields = dict()
 
