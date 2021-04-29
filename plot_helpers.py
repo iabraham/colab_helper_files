@@ -267,7 +267,7 @@ def plot_initial(ret):
   return idxs
 
 
-def plot_state(state, ax, item=None):
+def plot_state(state, ax, item=None, yadjust=False):
   """Plot data related to an US State.
 
   Parameters
@@ -294,7 +294,7 @@ def plot_state(state, ax, item=None):
       ax.plot(*getattr(state, 'smooth'), 'k')
   
   _, ymax = ax.get_ylim()
-  if item!='logts':
+  if yadjust:
       ax.set_ylim(0, ymax)
   
   ax.xaxis.set_ticks([])
