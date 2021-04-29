@@ -232,6 +232,7 @@ def plot_initial(ret):
 
   LM, phases, perm, sortedLM, evals = ret
 
+  oldfontsize = plt.rcParams['font.size']
   plt.rcParams['font.size']=14
   fig = plt.figure(figsize=(20,10), dpi=200, constrained_layout=True)
   left, right = fig.add_gridspec(1,2)
@@ -260,6 +261,8 @@ def plot_initial(ret):
   rax=fig.add_subplot(right_gs[0,0])
   ax, idxs = plot_evec(fig, rax, phases, 'rms', out=True)
   ax.set_title('Leading eigenvector components & RMS value')
+  
+  plt.rcParams['font.size'] = oldfontsize
   
   return idxs
 
