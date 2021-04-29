@@ -262,3 +262,39 @@ def plot_initial(ret):
   ax.set_title('Leading eigenvector components & RMS value')
   
   return idxs
+
+
+def plot_state(state, ax, item=None):
+  """Plot data related to an US State.
+
+  Parameters
+  ----------
+  state
+        A state instance with following properties:
+            - abbrev : A 2 letter abbreviation (string)
+            - raw : A tuple of (dates, data)
+            - smooth: A tuple of (dates, data)
+            - logts: A tuple of (dates, data)
+  ax
+        The pyplot axis to plot on
+  item 
+        One of 'raw', 'smooth' or 'logts'
+  """
+
+  item, both = ('raw', True) if item is None else (item, False)
+  mapper = {None: 'bar', 'raw': 'bar', 'smooth':'plot', 'logts':'plot'}
+  stuff, plotter = [getattr(*z) for z in zip([state, ax],[item,
+                    mapper[item]])]
+  cax = plotter(*stuff)
+  
+  if both:
+      ax.plot(*getattr(state, 'smooth'), 'k')
+  
+  _, ymax = ax.get_ylim()
+  if item!='logts':
+      ax.set_ylim(0, ymax)
+  
+  ax.xaxis.set_ticks([])
+  ax.set_xlabel(repr(state))
+  return ax
+

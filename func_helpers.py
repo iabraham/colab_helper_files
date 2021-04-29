@@ -213,3 +213,36 @@ def make_lead_matrix(data_list, intfunc):
         lead_matrix[tuple(reversed(index))] = - area
 
     return sort_lead_matrix(lead_matrix, 1)
+
+
+def moving_average(n, x):
+    """ Calculate the n-point moving averge along x. """
+
+    return np.convolve(x, np.ones(n), 'valid') / n
+
+
+def get_stats(state, start):
+    """Plot data related to an US State.
+
+    Parameters
+    ----------
+    state
+          A state instance with following properties:
+              - abbrev : A 2 letter abbreviation (string)
+              - raw : A tuple of (dates, data)
+              - smooth: A tuple of (dates, data)
+              - logts: A tuple of (dates, data)
+    start
+           The date from which to start collating data
+    
+    Returns
+    -------
+    A tuple of dates and data arrays
+    """
+    items = ['date', 'positive', 'positiveIncrease']
+    columns = state[items].set_index('date').sort_index().loc[start:]
+    *dates, = map(np.datetime64, columns.index.tolist())
+    daily_cases = columns['positiveIncrease'].values
+    
+    return np.asarray(dates), daily_cases
+
