@@ -1,7 +1,5 @@
 import numpy as np
-import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
-import cartopy.io.shapereader as shpreader
 from matplotlib.backends.backend_pdf import PdfPages
 
 tfunctions = {'rms': lambda x:np.sqrt(np.mean(np.square(np.abs(x)))),
@@ -303,36 +301,3 @@ def plot_state(state, ax, item=None, yadjust=False):
   ax.set_xlabel(repr(state))
   return ax
 
-
-def plot_color_states(states, color_dict, fig=None):
-    """ Plot US states with colors specified in a color dictionary. 
-
-    Parameters
-    ----------
-    states:
-        A record object obtained by reading shapefiles using shapely package,
-        namely: `cartopy.io.shapereader.Reader(shpfilename).records()`
-    color_dict:
-        A dictionary whose keys are state postal abbreviations and values are a
-        matplotlib.cm's rgba color specification
-    """
-
-    fig = plt.figure() if fig is None else fig
-
-    ax = fig.add_axes([0, 0, 1, 1], projection=ccrs.LambertConformal(),
-                      frameon=False)
-    ax.patch.set_visible(False)
-    ax.set_extent([-125, -66.5, 20, 50], ccrs.Geodetic())
-    
-    
-    for state in states:
-        code = state.attributes['postal']
-        ax.add_geometries([state.geometry], ccrs.PlateCarree(),
-                label=state.attributes['name'], facecolor=(cdict[code]))
-        xc, yc = state.geometry.centroid.x, state.geometry.centroid.y
-        if code != 'DC':
-            ax.text(xc, yc, code, ha='center', va='center',
-                    transform=ccrs.PlateCarree())
-
-    return fig
-    
