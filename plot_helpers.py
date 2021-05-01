@@ -301,3 +301,16 @@ def plot_state(state, ax, item=None, yadjust=False):
   ax.set_xlabel(repr(state))
   return ax
 
+
+def colormap(mapname, vals):
+  """ Creates some colormap related objects give the name of a colorm
+  and an array `vals` of values that need to  be color mapped. """
+  
+  from matplotlib.colors import Normalize
+  import matplotlib.cm as cm
+  
+  norms = Normalize(vmin=vals.min(), vmax=vals.max(), clip=True)
+  cmap = cm.ScalarMappable(norm=norms, cmap=plt.get_cmap(mapname))
+  *cvals, = map(cmap.to_rgba, vals)
+
+  return cvals, cmap, norms
