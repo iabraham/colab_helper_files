@@ -50,14 +50,6 @@ class Field:
         N = np.count_nonzero(~np.isnan(self.firingrates))
         return "Data for {x} with length {n}.".format(x=self.name, n=N)
 
-    def __len__(self):
-        """Return a tuple (n,m) where n is not np.nan and m is total."""
-
-        N = np.count_nonzero(~np.isnan(self.firingrates))
-        M, = self.firingrates.shape 
-        
-        return N, M
-
 
 class Neuron:
     """ A class to hold data corresponding to a neuron 
