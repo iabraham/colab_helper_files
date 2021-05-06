@@ -46,7 +46,9 @@ class Field:
 
     def __repr__(self):
         """ Pretty print a Field instance """
-        return "Data corresponding to item: {x}".format(x=self.name)
+
+        N = np.count_nonzero(~np.isnan(self.firingrates))
+        return "Data for {x} with length {n}.".format(x=self.name, n=N)
 
 
 class Neuron:
@@ -89,6 +91,12 @@ class Neuron:
 
         temp = list(self.fields.keys())
         return "A Neuron object with fields: " + ", ".join(temp)
+
+    
+    def __len__(self):
+        """Print how many fields a Neuron object has"""
+
+        return sum(1 for _ in self.fields.keys())
 
     
 def plot_neurons(neuron_dict):
