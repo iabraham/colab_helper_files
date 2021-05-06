@@ -30,6 +30,8 @@ class Field:
         self.timestamps = times
         self.firingrates = rates
         self.name = name
+        self.count = (np.count_nonzero(~np.isnan(rates)), len(rates))
+
 
     def get_timeseries(self):
         """ A getter function to get the data in a Field instance
