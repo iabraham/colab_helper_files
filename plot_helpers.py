@@ -215,7 +215,7 @@ def multipage(filename, figs=None, dpi=200):
   pp.close()
 
 
-def plot_initial(ret):
+def plot_initial(ret, grid=None, fig=None):
   """Plot output from a cyclicty analysis.
 
   Parameters
@@ -234,13 +234,24 @@ def plot_initial(ret):
 
   oldfontsize = plt.rcParams['font.size']
   plt.rcParams['font.size']=14
-  fig = plt.figure(figsize=(20,10), dpi=200, constrained_layout=True)
-  left, right = fig.add_gridspec(1,2)
-  left_gs = left.subgridspec(2,2)
-  right_gs = right.subgridspec(1,1)
 
-  stuff = [fig.add_subplot(left_gs[a,b]) for a in range(2) for b in range(2)]
-  r1c1, r1c2, r2c1, r2c2 = stuff
+  if grid is None:
+    fig = plt.figure(figsize=(20,10), dpi=200, constrained_layout=True)
+    left, right = fig.add_gridspec(1,2)
+    left_gs = left.subgridspec(2,2)
+    right_gs = right.subgridspec(1,1)
+
+    stuff = [fig.add_subplot(left_gs[a,b]) for a in range(2) for b in range(2)]
+    r1c1, r1c2, r2c1, r2c2 = stuff
+    rax = fig.add_subplot(right_gs[0,0])
+  elif fig is None:
+    raise NotImplementedError
+  else:
+    subgrid = grid.subgridspec(2, 4)
+    stuff = [fig.add_subplot(subgrid[a,b]) for a in range(2) for b in range(2)]
+    r1c1, r1c2, r2c1, r2c2 = stuff
+    rax = fig.add_subplot(subgrid[:, 2:])
+
 
   r1c1.stem(np.abs(evals), use_line_collection=True)
   r1c1.set_xlabel('Eigenvalues')
@@ -258,7 +269,6 @@ def plot_initial(ret):
   r2c2.imshow(sortedLM)
   r2c2.set_title('Lead matrix after sorting')
 
-  rax=fig.add_subplot(right_gs[0,0])
   ax, idxs = plot_evec(fig, rax, phases, 'rms', out=True)
   ax.set_title('Leading eigenvector components & RMS value')
   
