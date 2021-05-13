@@ -154,7 +154,7 @@ def zero_all_but(arr, n):
     return list(map(lambda z: z if z == n else 0, arr))
 
 
-def prune(x, y):
+def prune(x, y, ids=False):
     """Given two (possibly repeating) time stamped sequences 'prune' them.
 
     Parameters
@@ -182,7 +182,11 @@ def prune(x, y):
     xvals, yvals = map(lambda z: np.asarray(mixed_seq)[z], mixed_seq_idxs)
     N = min(map(len, [xvals, yvals]))
 
-    return xvals[:N], yvals[:N]
+    if ids:
+        xidx, yidx = [x[0] for x in mixed_seq_idxs]
+        return (xidx[:N], xvals[:N]), (yidx[:N], yvals[:N])
+    else:
+        return xvals[:N], yvals[:N]
 
 
 def make_pairs(data):
