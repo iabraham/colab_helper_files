@@ -141,54 +141,6 @@ def intify(arr):
     return list(map(lambda x: x if np.isnan(x) else int(x), arr))
 
 
-# def zero_all_but(arr, n):
-#     """Zero out everything in an array except the value "n". 
-# 
-#     Parameters
-#     ----------
-#     arr:
-#         array to modify
-#     n:
-#         value to leave unchanged.
-#     """
-#     return list(map(lambda z: z if z == n else 0, arr))
-# 
-# 
-# def prune(x, y, ids=False):
-#     """Given two (possibly repeating) time stamped sequences 'prune' them.
-# 
-#     Parameters
-#     ----------
-#     x
-#         A tuple of (timestamps, data)
-#     y
-#         A tuple of (timestamps, data)
-#     """
-# 
-#     # Tag them so we know who-is-who after merge
-#     *xbar, = zip(*x, np.ones(len(x[0])))
-#     *ybar, = zip(*y, -np.ones(len(y[0])))
-#     
-#     # Merge/sort-merge them 
-#     times, mixed_seq, labels = zip(*merge(xbar, ybar, key=lambda x:x[0]))
-#     *seperated_labels, = map(partial(zero_all_but, labels), [1,-1])
-#     
-#     # Detect repeats and changes
-#     changes = np.abs(np.diff(labels, append=labels[-1]))/2
-#     *seperation_masks, = map(partial(np.multiply, changes), seperated_labels)
-#     *mixed_seq_idxs, = map(np.nonzero, seperation_masks)
-# 
-#     # Extract pruned version
-#     xvals, yvals = map(lambda z: np.asarray(mixed_seq)[z], mixed_seq_idxs)
-#     N = min(map(len, [xvals, yvals]))
-# 
-#     if ids:
-#         xidx, yidx = [x[0] for x in mixed_seq_idxs]
-#         return (xidx[:N], xvals[:N]), (yidx[:N], yvals[:N])
-#     else:
-#         return xvals[:N], yvals[:N]
-
-
 def unique_justseen(iterable, key=None):
     "List unique elements, preserving order. Remember only the element just seen."
     from operator import itemgetter
