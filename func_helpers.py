@@ -2,8 +2,14 @@ import requests
 import numpy as np
 from heapq import merge
 from functools import partial
-from itertools import combinations
+from itertools import combinations, tee
 from cyclic_analysis import sort_lead_matrix
+
+
+def pairwise(iterable):
+    a, b = tee(iterable)
+    next(b, None)
+    return zip(a, b)
 
 
 def gaussian(x, mu, b=0, k=1):
