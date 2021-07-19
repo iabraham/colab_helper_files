@@ -2,13 +2,12 @@ import requests
 import numpy as np
 from heapq import merge
 from functools import partial
-from itertools import combinations
+from itertools import combinations, tee
 from cyclic_analysis import sort_lead_matrix
 
 
 def gaussian(x, mu, b=0, k=1):
-    """Evaluate a unit variance gaussian with mean k*mu with 
-       random noise b*rand()
+    """Evaluate a unit variance gaussian with mean k*mu with noise b*rand().
 
     Parameters
     ----------
@@ -26,8 +25,7 @@ def gaussian(x, mu, b=0, k=1):
 
 
 def sensed_gaussian(x, params, dist):
-    """Evaluate a unit variance gaussian with mean k*mu with 
-       random noise b*rand()
+    """Evaluate a unit variance gaussian with mean k*mu with noise b*rand().
 
     Parameters
     ----------
@@ -42,12 +40,12 @@ def sensed_gaussian(x, params, dist):
 
 
 def find_nearest(array, value):
-    """ Find the element in 1-D array that is closest to value.
+    """Find the element in 1-D array that is closest to value.
 
     Parameters
     ----------
     array
-        A 1-D numpy array 
+        A 1-D numpy array
     value
         The value to look for in array
     """
@@ -57,8 +55,8 @@ def find_nearest(array, value):
 
 
 def flatten(regular_list):
-    """ Flattens a list using list comprehensions. 
-    
+    """Flattens a list using list comprehensions.
+
     Parameters
     ----------
     regular_list:
@@ -68,8 +66,8 @@ def flatten(regular_list):
 
 
 def download_file_from_google_drive(id, destination):
-    """ Download a drive from Google Drive give id from shareable link. 
-    
+    """Download a drive from Google Drive give id from shareable link.
+
     Parameters
     ----------
     id:
@@ -77,31 +75,29 @@ def download_file_from_google_drive(id, destination):
     destination:
         The filename to save as on local disk
     """
-    
     URL = "https://docs.google.com/uc?export=download"
 
     session = requests.Session()
 
-    response = session.get(URL, params = { 'id' : id }, stream = True)
+    response = session.get(URL, params={'id': id}, stream=True)
     token = get_confirm_token(response)
 
     if token:
-        params = { 'id' : id, 'confirm' : token }
-        response = session.get(URL, params = params, stream = True)
+        params = {'id': id, 'confirm': token}
+        response = session.get(URL, params=params, stream=True)
 
-    save_response_content(response, destination)    
+    save_response_content(response, destination)
 
-    
+
 def get_confirm_token(response):
     """ Function to filter out some Cookie business from Google and
         extract the actual data
-    
+
     Parameters
     ----------
     response:
         The return value from a requests GET request
     """
-    
     for key, value in response.cookies.items():
         if key.startswith('download_warning'):
             return value
@@ -110,9 +106,9 @@ def get_confirm_token(response):
 
 
 def save_response_content(response, destination):
-    """ Function to open write the proper response content from a 
+    """ Function to open write the proper response content from a
         requests GET response to local disk.
-        
+
     Parameters
     ----------
     response:
@@ -121,17 +117,16 @@ def save_response_content(response, destination):
         A filename or file object denoting where to save file on
         local disk
     """
-    
     CHUNK_SIZE = 32768
 
     with open(destination, "wb") as f:
         for chunk in response.iter_content(CHUNK_SIZE):
-            if chunk: # filter out keep-alive new chunks
+            if chunk:  # filter out keep-alive new chunks
                 f.write(chunk)
 
 
 def intify(arr):
-    """Convert array into list of ints excepting nans in array. 
+    """Convert array into list of ints excepting nans in array.
 
     Parameters
     ----------
@@ -141,16 +136,22 @@ def intify(arr):
     return list(map(lambda x: x if np.isnan(x) else int(x), arr))
 
 
-def unique_justseen(iterable, key=None):
-    "List unique elements, preserving order. Remember only the element just seen."
-    from operator import itemgetter
-    from itertools import groupby
+def zero_all_but(arr, n):
+    """Zero out everything in an array except the value "n".
 
-    return map(next, map(itemgetter(1), groupby(iterable, key)))
+    Parameters
+    ----------
+    arr:
+        array to modify
+    n:
+        value to leave unchanged.
+    """
+    return list(map(lambda z: z if z == n else 0, arr))
 
 
-def prune(x, y, ids=False):
+def prune(x, y):
     """Given two (possibly repeating) time stamped sequences 'prune' them.
+
     Parameters
     ----------
     x
@@ -158,37 +159,33 @@ def prune(x, y, ids=False):
     y
         A tuple of (timestamps, data)
     """
-
     # Tag them so we know who-is-who after merge
-    def tag(label, arr):
-        labels = [label for _ in range(len(arr[0]))]
-        return zip(*arr, labels)
-    
-    *tagged, = map(list, [tag(l, arr) for l, arr in zip([1, -1], [x, y])])
-    
-    # Merge/sort-merge them 
-    merged = merge(*tagged, key=lambda x:x[0])
-    *pruned, = unique_justseen(merged, key=lambda x:x[2])
-    seperated = [list(filter(lambda x:x[2]==z, pruned)) for z in [1, -1]]
+    *xbar, = zip(*x, np.ones(len(x[0])))
+    *ybar, = zip(*y, -np.ones(len(y[0])))
 
-    (xids, xvals, _), (yids, yvals, _)  = [zip(*z) for z in seperated]
+    # Merge/sort-merge them
+    times, mixed_seq, labels = zip(*merge(xbar, ybar, key=lambda x: x[0]))
+    *seperated_labels, = map(partial(zero_all_but, labels), [1, -1])
+
+    # Detect repeats and changes
+    changes = np.abs(np.diff(labels, append=labels[-1]))/2
+    *seperation_masks, = map(partial(np.multiply, changes), seperated_labels)
+    *mixed_seq_idxs, = map(np.nonzero, seperation_masks)
+
+    # Extract pruned version
+    xvals, yvals = map(lambda z: np.asarray(mixed_seq)[z], mixed_seq_idxs)
     N = min(map(len, [xvals, yvals]))
 
-    if ids:
-        return (xids[:N], xvals[:N]), (yids[:N], yvals[:N])
-    else:
-        return xvals[:N], yvals[:N]
+    return xvals[:N], yvals[:N]
 
 
 def make_pairs(data):
     """Make pruned pairs from a list of data."""
-
-    return [prune(*pair) for pair in combinations(data, 2)]
+    return [prune(*pair) for j, pair in enumerate(combinations(data, 2))]
 
 
 def make_lead_matrix(data_list, intfunc):
-    """Manually create the lead matrix from a data list and integration
-    function
+    """Manually create the lead matrix from a list & integration function.
 
     Parameters
     ----------
@@ -210,34 +207,8 @@ def make_lead_matrix(data_list, intfunc):
     return sort_lead_matrix(lead_matrix, 1)
 
 
-def moving_average(n, x):
-    """ Calculate the n-point moving averge along x. """
-
-    return np.convolve(x, np.ones(n), 'valid') / n
-
-
-def get_stats(state, start):
-    """Plot data related to an US State.
-
-    Parameters
-    ----------
-    state
-          A state instance with following properties:
-              - abbrev : A 2 letter abbreviation (string)
-              - raw : A tuple of (dates, data)
-              - smooth: A tuple of (dates, data)
-              - logts: A tuple of (dates, data)
-    start
-           The date from which to start collating data
-    
-    Returns
-    -------
-    A tuple of dates and data arrays
-    """
-    items = ['date', 'positive', 'positiveIncrease']
-    columns = state[items].set_index('date').sort_index().loc[start:]
-    *dates, = map(np.datetime64, columns.index.tolist())
-    daily_cases = columns['positiveIncrease'].values
-    
-    return np.asarray(dates), daily_cases
-
+def pairwise(iterable):
+    """Iterate over an iterable two elements at a time."""
+    a, b = tee(iterable)
+    next(b, None)
+    return zip(a, b)
