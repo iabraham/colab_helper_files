@@ -74,4 +74,14 @@ blocks = {1: {'X': ['A', '0', '2'],
 for block, attribs in blocks.items():
     attribs['Z'] = [i for i in graph_dict.keys() if i not in (attribs['X'] + attribs['Y'])] 
     
-    
+layout = ['A','0', 'B', '4', 'C', '6', 'D', '2', '3', '5', '7', 'E', '1', 'F', 
+          '12', 'G', '8', 'H', '16', '14', '11', '9', 'I', '15', 'J', '13', 
+          'K', '10', 'L']
+
+cityBlockIds = product([1,3], [1,3,5])
+idxs = [(i,j) for i in range(5) for j in range(7)]
+
+for v in cityBlockIds:
+    idxs.remove(v)
+
+gridbased_idxs = dict(zip(layout, idxs))

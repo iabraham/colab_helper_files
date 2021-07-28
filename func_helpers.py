@@ -6,15 +6,8 @@ from itertools import combinations, tee
 from cyclic_analysis import sort_lead_matrix
 
 
-def pairwise(iterable):
-    a, b = tee(iterable)
-    next(b, None)
-    return zip(a, b)
-
-
 def gaussian(x, mu, b=0, k=1):
-    """Evaluate a unit variance gaussian with mean k*mu with 
-       random noise b*rand()
+    """Evaluate a unit variance gaussian with mean k*mu with noise b*rand().
 
     Parameters
     ----------
@@ -32,8 +25,7 @@ def gaussian(x, mu, b=0, k=1):
 
 
 def sensed_gaussian(x, params, dist):
-    """Evaluate a unit variance gaussian with mean k*mu with 
-       random noise b*rand()
+    """Evaluate a unit variance gaussian with mean k*mu with noise b*rand().
 
     Parameters
     ----------
@@ -48,12 +40,12 @@ def sensed_gaussian(x, params, dist):
 
 
 def find_nearest(array, value):
-    """ Find the element in 1-D array that is closest to value.
+    """Find the element in 1-D array that is closest to value.
 
     Parameters
     ----------
     array
-        A 1-D numpy array 
+        A 1-D numpy array
     value
         The value to look for in array
     """
@@ -63,8 +55,8 @@ def find_nearest(array, value):
 
 
 def flatten(regular_list):
-    """ Flattens a list using list comprehensions. 
-    
+    """Flattens a list using list comprehensions.
+
     Parameters
     ----------
     regular_list:
@@ -74,8 +66,8 @@ def flatten(regular_list):
 
 
 def download_file_from_google_drive(id, destination):
-    """ Download a drive from Google Drive give id from shareable link. 
-    
+    """Download a drive from Google Drive give id from shareable link.
+
     Parameters
     ----------
     id:
@@ -83,31 +75,29 @@ def download_file_from_google_drive(id, destination):
     destination:
         The filename to save as on local disk
     """
-    
     URL = "https://docs.google.com/uc?export=download"
 
     session = requests.Session()
 
-    response = session.get(URL, params = { 'id' : id }, stream = True)
+    response = session.get(URL, params={'id': id}, stream=True)
     token = get_confirm_token(response)
 
     if token:
-        params = { 'id' : id, 'confirm' : token }
-        response = session.get(URL, params = params, stream = True)
+        params = {'id': id, 'confirm': token}
+        response = session.get(URL, params=params, stream=True)
 
-    save_response_content(response, destination)    
+    save_response_content(response, destination)
 
-    
+
 def get_confirm_token(response):
     """ Function to filter out some Cookie business from Google and
         extract the actual data
-    
+
     Parameters
     ----------
     response:
         The return value from a requests GET request
     """
-    
     for key, value in response.cookies.items():
         if key.startswith('download_warning'):
             return value
@@ -116,9 +106,9 @@ def get_confirm_token(response):
 
 
 def save_response_content(response, destination):
-    """ Function to open write the proper response content from a 
+    """ Function to open write the proper response content from a
         requests GET response to local disk.
-        
+
     Parameters
     ----------
     response:
@@ -127,17 +117,16 @@ def save_response_content(response, destination):
         A filename or file object denoting where to save file on
         local disk
     """
-    
     CHUNK_SIZE = 32768
 
     with open(destination, "wb") as f:
         for chunk in response.iter_content(CHUNK_SIZE):
-            if chunk: # filter out keep-alive new chunks
+            if chunk:  # filter out keep-alive new chunks
                 f.write(chunk)
 
 
 def intify(arr):
-    """Convert array into list of ints excepting nans in array. 
+    """Convert array into list of ints excepting nans in array.
 
     Parameters
     ----------
@@ -164,7 +153,6 @@ def prune(x, y, ids=False):
     y
         A tuple of (timestamps, data)
     """
-
     # Tag them so we know who-is-who after merge
     def tag(label, arr):
         labels = [label for _ in range(len(arr[0]))]
@@ -193,8 +181,7 @@ def make_pairs(data):
 
 
 def make_lead_matrix(data_list, intfunc):
-    """Manually create the lead matrix from a data list and integration
-    function
+    """Manually create the lead matrix from a list & integration function.
 
     Parameters
     ----------

@@ -33,18 +33,22 @@ class Field:
         self.count = (np.count_nonzero(~np.isnan(rates)), len(rates))
 
 
-    def get_timeseries(self):
+    def get_timeseries(self, center=True):
         """ A getter function to get the data in a Field instance
 
         Returns
         -------
         array:
             A 2-row array where first row is timestamps and second row is
-            firing rates. 
+            firing rates.
         """
+        if center:
+            times = np.asarray(self.timestamps) - self.timestamps[0]
+        else:
+            times = np.asarray(self.timestamps)
 
-        times = np.asarray(self.timestamps) - self.timestamps[0]
-        return np.vstack((times, self.firingrates)) 
+        return np.vstack((times, self.firingrates))
+
 
     def __repr__(self):
         """ Pretty print a Field instance """
