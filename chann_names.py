@@ -1,3 +1,5 @@
+from itertools import product
+
 spline = ['TT10\\cl-maze1.4', 'TT10\\cl-maze1.5', 'TT11\\cl-maze1.10',
           'TT11\\cl-maze1.2', 'TT11\\cl-maze1.3', 'TT11\\cl-maze1.4',
           'TT11\\cl-maze1.5', 'TT11\\cl-maze1.7', 'TT11\\cl-maze1.9',
