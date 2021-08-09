@@ -3,7 +3,7 @@ import numpy as np
 from heapq import merge
 from functools import partial
 from scipy.signal import find_peaks
-from itertools import combinations, tee, groupby
+from itertools import combinations, tee, groupby, count
 
 
 def gaussian(x, mu, b=0, k=1):
