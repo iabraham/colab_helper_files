@@ -2,6 +2,7 @@ import requests
 import numpy as np
 from heapq import merge
 from functools import partial
+from scipy.signal import find_peaks
 from itertools import combinations, tee, groupby
 
 
