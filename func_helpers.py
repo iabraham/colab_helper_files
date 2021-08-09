@@ -2,7 +2,7 @@ import requests
 import numpy as np
 from heapq import merge
 from functools import partial
-from itertools import combinations, tee
+from itertools import combinations, tee, groupby
 
 
 def gaussian(x, mu, b=0, k=1):
@@ -193,4 +193,28 @@ def pairwise(iterable):
 def moving_average(n, x):
     """ Calculate the n-point moving averge along x."""
     return np.convolve(x, np.ones(n), 'valid') / n
+
+
+def splitvec(vec):
+    """Split an integer vector at points of discontinuity"""
+    return [[next(v)] + list(v)[-1:]
+            for k,v in groupby(vec, lambda x,c=count(): x-next(c))]
+
+
+def largest_contigous(arr, op, horz=True):
+    """ Return largest/longest increasing/decreasing contigous sequence in
+        array."""
+
+    zeros = np.where(op(np.diff(arr),0))
+    x_split = np.asarray([x for x in splitvec(zeros[0]) if len(x)>1])
+    x_lens = np.asarray(list(map(np.ptp, x_split)))
+    x_biggest = x_split[x_lens.argmax()]
+
+    y_lens = np.asarray(list(map(np.ptp, [arr[s] for s in x_split])))
+    y_biggest = x_split[y_lens.argmax()]
+
+    if horz:
+        return x_biggest, arr[slice(*x_biggest)]
+    else:
+        return y_biggest, arr[slice(*y_biggest)]
 
