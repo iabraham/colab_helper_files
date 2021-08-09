@@ -218,3 +218,18 @@ def largest_contigous(arr, op, horz=True):
     else:
         return y_biggest, arr[slice(*y_biggest)]
 
+    
+def clean_ramps(arr, peak_locs, mod, op):
+    """Function to iterate over peaks identified in an array
+    and clean them up.
+    """
+
+    onsets = []
+    for prev, curr in pairwise(np.hstack((1,peak_locs))):
+        search = -1*mod*arr[prev:curr]
+        start, _ = find_peaks(search, height=min(search) + 0.7*np.ptp(search))
+        onsetQ = start[-1] + prev
+        idx, _ = largest_contigous(arr[onsetQ:curr], op=op, horz=True)
+        onsets.append(idx+onsetQ)
+
+    return onsets
