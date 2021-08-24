@@ -50,3 +50,16 @@ def sign_to_node(row):
     return mapper.get((row.X, row.Y), "C")
 
 
+def read_cl(filepath):
+    
+    with open(filepath) as stream:
+        lines = [x.strip() for x in stream.readlines()]
+    
+    header = lines[8].split(",")
+    idx_start, idx_stop = map(int, lines[11:13])
+    
+    df = pd.read_csv(StringIO("\n".join(lines[13:])), names=header, index_col="Timestamp")
+    start = df.index.get_loc(idx_start, method='nearest')
+    stop = df.index.get_loc(idx_stop, method='nearest')
+
+    return df[start:stop]
