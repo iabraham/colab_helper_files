@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from io import StringIO
 
 
 def read_cam_orientation(folder):
