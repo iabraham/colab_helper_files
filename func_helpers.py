@@ -6,6 +6,13 @@ from itertools import combinations, tee
 from cyclic_analysis import sort_lead_matrix
 
 
+def pairwise(iterable):
+    """Iterate over an iterable two elements at a time."""
+    a, b = tee(iterable)
+    next(b, None)
+    return zip(a, b)
+
+
 def gaussian(x, mu, b=0, k=1):
     """Evaluate a unit variance gaussian with mean k*mu with noise b*rand().
 
