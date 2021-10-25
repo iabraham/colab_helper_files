@@ -216,7 +216,7 @@ def multipage(filename, figs=None, dpi=200):
   pp.close()
 
 
-def plot_initial(ret, grid=None, fig=None):
+def plot_initial(ret, grid=None, fig=None, labels=False):
   """Plot output from a cyclicty analysis.
 
   Parameters
@@ -237,7 +237,7 @@ def plot_initial(ret, grid=None, fig=None):
   plt.rcParams['font.size']=14
 
   if grid is None:
-    fig = plt.figure(figsize=(20,10), dpi=200, constrained_layout=True)
+#    fig = plt.figure(figsize=(20,10), dpi=200, constrained_layout=True)
     left, right = fig.add_gridspec(1,2)
     left_gs = left.subgridspec(2,2)
     right_gs = right.subgridspec(1,1)
@@ -257,18 +257,24 @@ def plot_initial(ret, grid=None, fig=None):
   r1c1.stem(np.abs(evals), use_line_collection=True)
   r1c1.set_xlabel('Eigenvalues')
   r1c1.set_ylabel('Absolute value of eiegenvalues')
-  r1c1.set_title('Eigenvalue drop off')
+#  r1c1.set_title('Eigenvalue drop off')
 
   r1c2.stem(np.cumsum(np.abs(evals)[::2])/np.abs(evals)[::2].sum(), 
           use_line_collection=True)
   r1c2.set_xlabel('Every second eigenvalue')
   r1c2.set_ylabel('Cumulative contribution of eigenvalues')
-  r1c2.set_title('Eigenvalue contribution to totals')
+#  r1c2.set_title('Eigenvalue contribution to totals')
 
-  r2c1.imshow(LM)
-  r2c1.set_title('Obtained lead matrix')
-  r2c2.imshow(sortedLM)
-  r2c2.set_title('Lead matrix after sorting')
+  if labels:
+      plabels = np.asarray(labels)[perm]
+      heatmap(LM, labels, labels, rot=90, ax=r2c1)
+      heatmap(sortedLM, plabels, plabels, rot=90, ax=r2c2)
+  else:
+      r2c1.imshow(LM)
+      r2c2.imshow(sortedLM)
+
+#  r2c1.set_title('Obtained lead matrix')
+#  r2c2.set_title('Lead matrix after sorting')
 
   ax, idxs = plot_evec(fig, rax, phases, 'rms', out=True)
   ax.set_title('Leading eigenvector components & RMS value')
