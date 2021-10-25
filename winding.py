@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from io import StringIO
+from collections import deque
+import pudb
 
 
 def read_cam_orientation(folder):
@@ -75,10 +77,10 @@ def read_cl(filepath):
     return df[start:stop]
 
 
-def pop_until(dq, elem):
-    """Pop elements from a deque object until elem is seen"""
-    while dq[-1] != elem:
-        yield dq.pop()
+# def pop_until(dq, elem):
+#     """Pop elements from a deque object until elem is seen"""
+#     while dq[-1] != elem:
+#         yield dq.pop()
 
 
 def split(sequence, sep, key=lambda x: x):
@@ -101,3 +103,19 @@ def is_rotation(s1, s2):
 def is_same_loop(l1, l2):
     """Check if two loops are the same"""
     return is_rotation(l1[:-1], l2[:-1])
+
+
+node = lambda x: x[1]
+class itaDeque(deque):
+    """Modifies collections.deque for our use/"""
+
+    def __init__(self, *args):
+        super(itaDeque, self).__init__(*args)
+
+    def pop_until(self, elem):
+        while node(self[-1]) != elem:
+            yield self.pop()
+
+    def __contains__(self, elem):
+        return elem in [node(x) for x in self]
+
