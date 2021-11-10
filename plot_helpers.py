@@ -325,3 +325,16 @@ def colormap(mapname, vals):
   *cvals, = map(cmap.to_rgba, vals)
 
   return cvals, cmap, norms
+
+
+def fixedcmap(mapname, minmax, vals):
+  
+  from matplotlib.colors import Normalize
+  import matplotlib.cm as cm
+
+  minval, maxval = minmax
+  norms = Normalize(vmin=minval, vmax=maxval, clip=True)
+  cmap = cm.ScalarMappable(norm=norms, cmap=plt.get_cmap(mapname))
+  *cvals, = map(cmap.to_rgba, vals)
+
+  return cvals, cmap, norms
