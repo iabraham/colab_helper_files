@@ -3,7 +3,6 @@ import numpy as np
 from heapq import merge
 from functools import partial
 from itertools import combinations, tee
-from cyclic_analysis import sort_lead_matrix
 
 
 def gaussian(x, mu, b=0, k=1):
