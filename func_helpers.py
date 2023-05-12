@@ -74,7 +74,7 @@ def download_file_from_google_drive(id, destination):
     destination:
         The filename to save as on local disk
     """
-    URL = "https://docs.google.com/uc?export=download"
+    URL = "https://docs.google.com/uc?export=download&confirm=9iBg"
 
     session = requests.Session()
 
